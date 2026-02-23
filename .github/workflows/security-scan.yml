@@ -10,6 +10,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --staged --verbose
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -19,11 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      - name: Install Bandit
-        run: pip install bandit
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit
       - name: Run Bandit
-        # This tells Bandit to scan the current directory and fail if it finds high-severity issues
+        # This scans the directory and fails if it finds High Severity issues
         run: bandit -r . -ll
