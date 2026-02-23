@@ -1,24 +1,29 @@
 name: Security Scan
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push, pull_request]
 
 jobs:
   secrets-scan:
     name: Secret Leak Detection
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2  # Tells Git to look at the whole history
-
+      - uses: actions/checkout@v4
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
-        with:
-          args: detect --source . --staged --verbose
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} #Security scan version 1.0
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  code-scan:
+    name: Python SAST (Bandit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install Bandit
+        run: pip install bandit
+      - name: Run Bandit
+        # This tells Bandit to scan the current directory and fail if it finds high-severity issues
+        run: bandit -r . -ll
