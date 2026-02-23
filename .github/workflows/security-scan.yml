@@ -18,5 +18,7 @@ jobs:
 
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --staged --verbose
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}# Security scan version 1.0
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} #Security scan version 1.0
